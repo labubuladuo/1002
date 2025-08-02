@@ -19,7 +19,6 @@ function inputStyle(padding:ResourceStr, onChange:(value: string) => void){
   .margin({top:12})
   .onChange(onChange)
 }
-
 @Component
 export struct AccountLogin {
 
