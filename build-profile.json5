@@ -1,0 +1,62 @@
+{
+  "app": {
+    "signingConfigs": [],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "5.1.1(19)",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "phone",
+      "srcPath": "./product/phone",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Common",
+      "srcPath": "./common/Common",
+    },
+    {
+      "name": "libraryA",
+      "srcPath": "./libraryA"
+    },
+    {
+      "name": "libraryC",
+      "srcPath": "./libraryC",
+    },
+    {
+      "name": "libraryCB",
+      "srcPath": "./libraryCB",
+    },
+    {
+      "name": "loginFeature02",
+      "srcPath": "./loginFeature02"
+    }
+  ]
+}

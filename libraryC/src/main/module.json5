@@ -1,0 +1,9 @@
+{
+  "module": {
+    "name": "libraryC",
+    "type": "har",
+    "deviceTypes": [
+      "default"
+    ]
+  }
+}
