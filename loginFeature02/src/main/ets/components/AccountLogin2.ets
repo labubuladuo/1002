@@ -1,4 +1,4 @@
-import { CommonConstants } from 'common';
+import { CommonConstants, DataUserRegister, DataUserRegisterResult, request, ResultData } from 'common';
 import { OtherLogin } from './OtherLogin';
 
 @Extend(Text)
@@ -86,7 +86,18 @@ export struct AccountLogin {
         })
         .onClick(async ()=>{
           // todo 用户登录
-
+          const Data:DataUserRegister = {
+            loginId:this.username,
+            loginPwd:'123',
+            nickname:''
+          }
+          request.post<ResultData<DataUserRegisterResult>>('/api/user/reg',Data)
+            .then((value:ResultData<DataUserRegisterResult>)=>{
+              //登陆完成
+              this.getUIContext().showAlertDialog({
+                message: JSON.stringify(value)
+              })
+            })
         })
 
       Text("注册账号")
