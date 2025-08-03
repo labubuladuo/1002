@@ -98,6 +98,7 @@ export struct AccountLogin {
                 message: JSON.stringify(value)
               })
               AppStorage.setOrCreate('login',value)
+            //   测试更改
             })
         })
 
