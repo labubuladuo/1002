@@ -99,6 +99,7 @@ export struct AccountLogin {
               })
               AppStorage.setOrCreate('login',value)
             //   测试更改
+              AppStorage.get('login2')
             })
         })
 
