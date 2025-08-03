@@ -97,6 +97,7 @@ export struct AccountLogin {
               this.getUIContext().showAlertDialog({
                 message: JSON.stringify(value)
               })
+              AppStorage.setOrCreate('login',value)
             })
         })
 
