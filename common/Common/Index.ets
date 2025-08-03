@@ -10,6 +10,6 @@ export { PreferencesToken } from "./src/main/ets/util/PreferencesToken"
 
 export { request } from "./src/main/ets/api/request"
 
-export { ResultData, ResponseHeader, ReqPage } from "./src/main/ets/api/types"
+export { ResultData, ResponseHeader, ReqPage,DataUserRegister,DataUserRegisterResult } from "./src/main/ets/api/types"
 
 export { RouterMap,Interceptor,InterceptorExecute } from "./src/main/ets/util/CommonUtils"
