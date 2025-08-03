@@ -18,7 +18,7 @@ function routerOnClick(url: string, builderName: string) {
       return;
     }
 
-    RouterMap.push(url,builderName,"SimpleNotes");
+    RouterMap.push(url,builderName,"pageInfos");
   })
 }
 

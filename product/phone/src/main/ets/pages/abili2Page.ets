@@ -1,29 +1,30 @@
-import { router } from '@kit.ArkUI';
-import { common, Want } from '@kit.AbilityKit';
-
 @Entry
 @Component
-struct Abili2Page {
-  @State message: string = 'Hello World232';
+struct I2 {
+  @State isShow:boolean = false
+  @Builder
+  builder(){
 
-  aboutToAppear(): void {
-    this.getUIContext().getHostContext()
+    Index({isShow:this.isShow})
   }
-  private context:common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   build() {
-    RelativeContainer() {
-      Text(this.message)
-
-        .onClick(() => {
-          this.message = 'Welcome';
-          let want:Want = {
-
-          }
-          this.context.startAbility(want)
-        })
-    }
-    .height('100%')
-    .width('100%')
+    Text('1221')
+      .onClick(()=>{
+        this.isShow = true;
+      })
+      .bindContentCover($$this.isShow,this.builder)
   }
 }
 
+@Component
+struct Index {
+  @Link isShow:boolean
+  build() {
+    Column(){
+      Text('2323')
+        .onClick(()=>{
+          this.isShow = false;
+        })
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import { common } from "@kit.AbilityKit";
+
 export class ResultData<T> {
   code: number
   msg: string
@@ -46,5 +48,11 @@ export interface DataUserRegisterResult {
   /**
    * 昵称，可重复，不超过20个字符
    */
+  nickname: string;
+}
+
+export interface LoginInfo{
+  _id: string;
+  loginId: string;
   nickname: string;
 }
