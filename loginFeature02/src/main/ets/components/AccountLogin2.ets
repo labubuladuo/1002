@@ -111,7 +111,7 @@ export struct AccountLogin {
           // todo 用户登录
           const Data: DataUserRegister = {
             loginId: this.username,
-            loginPwd: '123',
+            loginPwd: this.password,
             nickname: this.username
           }
           //登陆完成
@@ -125,14 +125,10 @@ export struct AccountLogin {
             loginPwd: string
           }
 
-          const loginData: login = {
-            loginId: this.username,
-            loginPwd: this.password
-          }
           this.getUIContext().showAlertDialog({
-            message: JSON.stringify(loginData)
+            message: JSON.stringify(Data)
           })
-          request.post<ResultData<LoginInfo>>('/api/user/login', loginData)
+          request.post<ResultData<LoginInfo>>('/api/user/login',Data)
             .then(async (data: ResultData<LoginInfo>) => {
               AppStorage.setOrCreate('userInfo', data)
               const myStore =
