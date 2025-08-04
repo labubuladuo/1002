@@ -1,9 +1,18 @@
-import { CommonConstants, DataUserRegister, DataUserRegisterResult, LoginInfo, request, ResultData,
-  RouterMap } from 'common';
+import {
+  CommonConstants,
+  DataUserRegister,
+  DataUserRegisterResult,
+  LoginInfo,
+  request,
+  ResultData,
+  RouterMap
+} from 'common';
 import { OtherLogin } from './OtherLogin';
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { Register } from './registerPage';
+import { promptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Extend(Text)
 function blueTextStyle() {
@@ -105,37 +114,42 @@ export struct AccountLogin {
             loginPwd: '123',
             nickname: this.username
           }
-          request.post<ResultData<DataUserRegisterResult>>('/api/user/reg', Data)
-            .then(async (value: ResultData<DataUserRegisterResult>) => {
-              //登陆完成
-              // this.getUIContext().showAlertDialog({
-              //   message: JSON.stringify(value)
-              // })
+          //登陆完成
+          // this.getUIContext().showAlertDialog({
+          //   message: JSON.stringify(value)
+          // })
 
-              //   登录
-              interface login {
-                loginId: string
-                loginPwd: string
-              }
+          //   登录
+          interface login {
+            loginId: string
+            loginPwd: string
+          }
 
-              const loginData: login = {
-                loginId: this.username,
-                loginPwd: this.password
-              }
-
-              request.post<ResultData<LoginInfo>>('/api/user/login', loginData)
-                .then(async (data: ResultData<LoginInfo>) => {
-                  AppStorage.setOrCreate('loginInfo', value)
-                  AppStorage.setOrCreate('userInfo', data)
-                  const myStore =
-                    preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'myStore' })
-                  await myStore.put('loginInfo', value)
-                  await myStore.put('userInfo', data)
-                  myStore.flushSync()
-                  this.getUIContext().showAlertDialog({
-                    message: JSON.stringify(AppStorage.get('userInfo'))
-                  })
-                })
+          const loginData: login = {
+            loginId: this.username,
+            loginPwd: this.password
+          }
+          this.getUIContext().showAlertDialog({
+            message: JSON.stringify(loginData)
+          })
+          request.post<ResultData<LoginInfo>>('/api/user/login', loginData)
+            .then(async (data: ResultData<LoginInfo>) => {
+              AppStorage.setOrCreate('userInfo', data)
+              const myStore =
+                preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'myStore' })
+              await myStore.put('userInfo', data)
+              await myStore.flush()
+              this.getUIContext().showAlertDialog({
+                message: JSON.stringify(data),
+              })
+              promptAction.showToast({
+                message: '登录成功！'
+              })
+            })
+            .catch((err: BusinessError) => {
+              this.getUIContext().showAlertDialog({
+                message: JSON.stringify(err) + 'error'
+              })
             })
         })
 
@@ -152,8 +166,7 @@ export struct AccountLogin {
       OtherLogin()
 
     }
-    .bindContentCover($$this.isShow,this. registerBuilder,{
-    })
+    .bindContentCover($$this.isShow, this.registerBuilder, {})
     .height(CommonConstants.FULL_LENGTH)
     .width(CommonConstants.FULL_LENGTH)
     .justifyContent(FlexAlign.Center)
