@@ -9,11 +9,10 @@ import {
 } from 'common';
 import { OtherLogin } from './OtherLogin';
 import { preferences } from '@kit.ArkData';
-import { common } from '@kit.AbilityKit';
 import { Register } from './registerPage';
 import { promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-
+import { Context } from '@ohos.arkui.UIContext';
 @Extend(Text)
 function blueTextStyle() {
   .fontColor('#367BF6')
@@ -38,17 +37,22 @@ function inputStyle(padding: ResourceStr, onChange: (value: string) => void) {
 export struct AccountLogin {
   buttonColor: ResourceStr = '#367BF6'
   imageColor: ResourceStr = '#71767F'
+  private context: Context | null = null
   @State username: string = "";
   @State password: string = "";
   @State isShow: boolean = false;
   @Link isDefaultLogin: boolean
   @Link isShowTransition: boolean
-
+  @Link daiLogShow:boolean
   @Builder
   registerBuilder() {
     Register({
       isShow: this.isShow
     })
+  }
+
+  aboutToAppear(): void {
+    this.context = this.getUIContext().getHostContext() as Context;
   }
 
   // private context:common.UIAbilityContext = this.getUIContext().getHostContext()
@@ -114,33 +118,26 @@ export struct AccountLogin {
             loginPwd: this.password,
             nickname: this.username
           }
-          //登陆完成
-          // this.getUIContext().showAlertDialog({
-          //   message: JSON.stringify(value)
-          // })
-
-          //   登录
-          interface login {
-            loginId: string
-            loginPwd: string
-          }
-
-          this.getUIContext().showAlertDialog({
-            message: JSON.stringify(Data)
-          })
-          request.post<ResultData<LoginInfo>>('/api/user/login',Data)
+          request.post<ResultData<LoginInfo>>('/api/user/login', Data)
             .then(async (data: ResultData<LoginInfo>) => {
-              AppStorage.setOrCreate('userInfo', data)
-              const myStore =
-                preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'myStore' })
-              await myStore.put('userInfo', data)
-              await myStore.flush()
-              this.getUIContext().showAlertDialog({
-                message: JSON.stringify(data),
-              })
+
+              AppStorage.setOrCreate('loginInfo', data)
+              try {
+                const myStore =
+                  preferences.getPreferencesSync(this.context, { name: 'myStore' })
+                await myStore.put('loginInfo', JSON.stringify(data))
+                await myStore.flush()
+              } catch (e) {
+                this.getUIContext().showAlertDialog({
+                  message: JSON.stringify((e as BusinessError))
+                })
+              }
               promptAction.showToast({
-                message: '登录成功！'
+                message: '登录成功！',
+                duration:1500,
+                backgroundColor:'#eee'
               })
+              this.daiLogShow = false;
             })
             .catch((err: BusinessError) => {
               this.getUIContext().showAlertDialog({

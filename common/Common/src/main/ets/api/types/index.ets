@@ -52,7 +52,7 @@ export interface DataUserRegisterResult {
 }
 
 export interface LoginInfo{
-  _id: string;
+  id: string;
   loginId: string;
   nickname: string;
 }
