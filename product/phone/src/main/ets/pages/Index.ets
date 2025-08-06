@@ -1,6 +1,7 @@
-import { logger, RouterMap } from 'common'
-import { PromptAction, promptAction } from '@kit.ArkUI'
-import { FeatureModule, mainFeatures, otherFeatures} from "../DataModel/FeatureModule"
+import { logger, LoginInfo, RouterMap } from 'common'
+import { AppStorageV2, PromptAction, promptAction } from '@kit.ArkUI'
+import { FeatureModule, mainFeatures, otherFeatures } from "../DataModel/FeatureModule"
+import { preferences } from '@kit.ArkData'
 
 @Extend(Image)
 function imageStyle() {
@@ -13,12 +14,12 @@ function imageStyle() {
 function routerOnClick(url: string, builderName: string) {
   .clickEffect({ level: ClickEffectLevel.HEAVY })
   .onClick(() => {
-    if(url === "" || builderName === ""){
+    if (url === "" || builderName === "") {
       promptAction.showToast({ message: "该功能还在努力研发中..." });
       return;
     }
 
-    RouterMap.push(url,builderName,"SimpleNotes");
+    RouterMap.push(url, builderName, "pageInfos");
   })
 }
 
@@ -26,36 +27,64 @@ function routerOnClick(url: string, builderName: string) {
 @Component
 struct Index {
   @Provide("pageInfos")
-  pageInfos:NavPathStack = new NavPathStack();
-  routerName:string = "pageInfos";
-  @State loginUser:boolean | undefined = undefined
-  @State opacityIndex:number  = 1;
+  pageInfos: NavPathStack = new NavPathStack();
+  routerName: string = "pageInfos";
+  @State opacityIndex: number = 1;
+  @StorageLink('loginInfo') loginInfo: LoginInfo | undefined = undefined
+  //用户首选项对象
+  private b: preferences.Preferences | null = null
 
   aboutToAppear(): void {
-    this.loginUser = AppStorage.get('login')
+    //
+    this.b = preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: "myStore" })
+
+    if (this.b.hasSync('loginInfo')) {
+      //todo 注意首选项写入本地时会把object转成string，读取出来也是类型字符串
+      let data = this.b.getSync('loginInfo', {})
+      data = typeof data === 'string' ? JSON.parse(data) : ''
+      AppStorage.setOrCreate('loginInfo', data)
+    }
     RouterMap.setNavPathInfo(this.routerName, this.pageInfos);
   }
 
-  @Builder userInfoItem(){
-    Row(){
-      Image($r("app.media.ic_logo_duyi"))
-        .width(80)
-        .height(80)
-        .margin({
-          top: -50,
-          left: 15
-        })
-        .borderRadius(5)
-        .clip(true)
-
-
-      Text("登录/注册")
-        .fontSize(18)
-        .margin(15)
-        .fontWeight(FontWeight.Bold)
-        .onClick(()=>{
-          RouterMap.push('./src/main/ets/components/loginPage','loginfeature02','LoginPageBuilder')
-        })
+  @Builder
+  userInfoItem() {
+    Row() {
+     if(this.loginInfo){
+       Image($r('app.media.img'))
+         .width(80)
+         .height(80)
+         .margin({
+           top: -50,
+           left: 15
+         })
+         .borderRadius(5)
+         .clip(true)
+       Text(this.loginInfo.nickname)
+         .fontSize(18)
+         .margin(15)
+         .fontWeight(FontWeight.Bold)
+         .onClick(() => {
+           RouterMap.push('./src/main/ets/components/loginPage', 'loginfeature02', 'LoginPageBuilder')
+         })
+     }else{
+       Image($r("app.media.ic_logo_duyi"))
+         .width(80)
+         .height(80)
+         .margin({
+           top: -50,
+           left: 15
+         })
+         .borderRadius(5)
+         .clip(true)
+       Text("登录/注册")
+         .fontSize(18)
+         .margin(15)
+         .fontWeight(FontWeight.Bold)
+         .onClick(() => {
+           RouterMap.push('./src/main/ets/components/loginPage', 'loginfeature02', 'LoginPageBuilder')
+         })
+     }
 
     }
     .width("100%")
@@ -68,7 +97,8 @@ struct Index {
    * @param url 路由地址
    * @param builderName builder名称
    */
-  @Builder featureItem(text: ResourceStr, icon: ResourceStr, url: string, builderName:string) {
+  @Builder
+  featureItem(text: ResourceStr, icon: ResourceStr, url: string, builderName: string) {
     Row() {
       Image(icon).imageStyle()
       Text(text)
@@ -76,18 +106,17 @@ struct Index {
         .margin(15)
     }
     .width("100%")
-    .routerOnClick(url,builderName)
+    .routerOnClick(url, builderName)
   }
 
   @Builder
-  pageMap(name:string, params:object){
+  pageMap(name: string, params: object) {
     RouterMap.getBuilder(name).builder(params);
   }
 
-
   build() {
-    Navigation(this.pageInfos){
-      List({initialIndex:0, space:20}){
+    Navigation(this.pageInfos) {
+      List({ initialIndex: 0, space: 20 }) {
         // 占位组件
         ListItem().height(40).selectable(false)
 
@@ -98,7 +127,7 @@ struct Index {
           }.height(60)
 
           ListItem({ style: ListItemStyle.CARD }) {
-            Text("这个人很懒，没有设置签名")
+            Text(typeof this.loginInfo)
               .width("100%")
               .fontSize(14)
               .fontColor(Color.Grey)
@@ -114,7 +143,7 @@ struct Index {
 
         // 主要功能列表
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
-          ForEach(mainFeatures,(feature:FeatureModule)=>{
+          ForEach(mainFeatures, (feature: FeatureModule) => {
             ListItem({ style: ListItemStyle.CARD }) {
               this.featureItem(
                 feature.text,
@@ -133,7 +162,7 @@ struct Index {
 
         // 其他功能列表
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
-          ForEach(otherFeatures,(feature:FeatureModule)=>{
+          ForEach(otherFeatures, (feature: FeatureModule) => {
             ListItem({ style: ListItemStyle.CARD }) {
               this.featureItem(
                 feature.text,
@@ -150,11 +179,11 @@ struct Index {
           startMargin: 60
         })
 
-        if(this.loginUser){
+        if (this.loginInfo) {
           // 页脚
           ListItemGroup({ style: ListItemGroupStyle.CARD }) {
             ListItem({ style: ListItemStyle.CARD }) {
-              Row(){
+              Row() {
                 Text("退出登录")
                   .fontSize(18)
                   .fontColor(Color.Red)
@@ -180,15 +209,17 @@ struct Index {
                       enabled: true,
                       defaultFocus: true,
                       style: DialogButtonStyle.HIGHLIGHT,
-                      backgroundColor:"#40",
+                      backgroundColor: "#40",
                       value: '退出',
                       action: () => {
                         // todo 退出登录
                         logger.info("点击了退出登录")
-                        AppStorage.set("login","");
+                        AppStorage.set("loginInfo", undefined);
+                        this.b?.deleteSync('loginInfo')
+                        this.b?.flush()
                       }
                     },
-                    onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+                    onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
                       // 点击如果点击弹出层外部和点击回退取消弹出层
                       if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
                         dismissDialogAction.dismiss()

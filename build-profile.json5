@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/bangbangji/.ohos/config/default_1002_Jo4CTZ_Pj-okQ9TkLyHy14PNzdbJHVyJcbjcwosn-nU=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B0A32A8ED448D09302B565E27465F12F0915655934DEC0BEBDAB0BD61AD0229AF9E83B6E2FE0A5F",
+          "profile": "/Users/bangbangji/.ohos/config/default_1002_Jo4CTZ_Pj-okQ9TkLyHy14PNzdbJHVyJcbjcwosn-nU=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/bangbangji/.ohos/config/default_1002_Jo4CTZ_Pj-okQ9TkLyHy14PNzdbJHVyJcbjcwosn-nU=.p12",
+          "storePassword": "0000001B923B1B4077B8C09A3059372072FAE88B9F88B8E395F4B82D2233173BFBBB73CC315318E4DF1765"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

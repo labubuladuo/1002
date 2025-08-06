@@ -168,7 +168,9 @@ export struct LoginOfVerifyPage {
         } else {
           AccountLogin({
             isDefaultLogin: this.isDefaultLogin,
-            isShowTransition: this.isShowTransition
+            isShowTransition: this.isShowTransition,
+            daiLogShow: this.daiLogShow
+
           }) // 账户密码登录方式
             .transition(this.Effect2)
         }
